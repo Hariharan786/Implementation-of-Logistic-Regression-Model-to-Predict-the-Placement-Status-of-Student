@@ -26,7 +26,7 @@ Register Number:  212225040111
 ```
 # Logistic Regression for Student Placement Prediction
 
-# 1️⃣ Import Libraries
+#Import Libraries
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -36,47 +36,47 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# 2️⃣ Load Dataset
+#Load Dataset
 data = pd.read_csv("Placement_Data.csv")   
 
 print("Dataset Preview:")
 print(data.head())
 
-# 3️⃣ Drop Unnecessary Columns
+#Drop Unnecessary Columns
 data = data.drop(["sl_no", "salary"], axis=1)
 
-# 4️⃣ Convert Target Variable (status) to Binary
+#Convert Target Variable (status) to Binary
 # Placed = 1, Not Placed = 0
 data["status"] = data["status"].map({"Placed": 1, "Not Placed": 0})
 
-# 5️⃣ Separate Features and Target
+#Separate Features and Target
 X = data.drop("status", axis=1)
 y = data["status"]
 
-# 6️⃣ One-Hot Encode Categorical Variables
+#One-Hot Encode Categorical Variables
 X = pd.get_dummies(X, drop_first=True)
 
 print("\nAfter Encoding:")
 print(X.head())
 
-# 7️⃣ Feature Scaling
+#Feature Scaling
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# 8️⃣ Train-Test Split
+#Train-Test Split
 X_train, X_test, y_train, y_test = train_test_split(
     X_scaled, y, test_size=0.2, random_state=42
 )
 
-# 9️⃣ Train Logistic Regression Model
+#Train Logistic Regression Model
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
-# 🔟 Make Predictions
+#Make Predictions
 y_pred = model.predict(X_test)
 y_prob = model.predict_proba(X_test)[:, 1]
 
-# 1️⃣1️⃣ Model Evaluation
+#Model Evaluation
 print("\nAccuracy:", accuracy_score(y_test, y_pred))
 
 print("\nClassification Report:")
