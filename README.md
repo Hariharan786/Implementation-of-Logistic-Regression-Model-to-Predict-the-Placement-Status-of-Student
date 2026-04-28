@@ -24,79 +24,64 @@ Register Number:  212225040111
 */
 ```
 ```
-# Logistic Regression for Student Placement Prediction
-
-#Import Libraries
-import pandas as pd
+# import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import matplotlib.pyplot as plt
-import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
 
-#Load Dataset
-data = pd.read_csv("Placement_Data.csv")   
+# Load dataset
+data = pd.read_csv("Placement_Data.csv")
 
-print("Dataset Preview:")
-print(data.head())
+# Drop salary column (contains missing values)
+data = data.drop("salary", axis=1)
 
-#Drop Unnecessary Columns
-data = data.drop(["sl_no", "salary"], axis=1)
+# Convert categorical data to numeric
+data = pd.get_dummies(data, drop_first=True)
 
-#Convert Target Variable (status) to Binary
-# Placed = 1, Not Placed = 0
-data["status"] = data["status"].map({"Placed": 1, "Not Placed": 0})
+# Features and target
+X = data.drop("status_Placed", axis=1)
+y = data["status_Placed"]
 
-#Separate Features and Target
-X = data.drop("status", axis=1)
-y = data["status"]
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-#One-Hot Encode Categorical Variables
-X = pd.get_dummies(X, drop_first=True)
-
-print("\nAfter Encoding:")
-print(X.head())
-
-#Feature Scaling
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-#Train-Test Split
-X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled, y, test_size=0.2, random_state=42
-)
-
-#Train Logistic Regression Model
+# Train model
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
-#Make Predictions
-y_pred = model.predict(X_test)
-y_prob = model.predict_proba(X_test)[:, 1]
+# Accuracy
+print("Accuracy:", model.score(X_test, y_test))
 
-#Model Evaluation
-print("\nAccuracy:", accuracy_score(y_test, y_pred))
 
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
+# -------------------------------
+# 📈 Logistic Regression Plot
+# -------------------------------
 
-# Confusion Matrix
-cm = confusion_matrix(y_test, y_pred)
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-plt.title("Confusion Matrix - Placement Prediction")
+# Use only ONE feature for plotting
+X1 = X.iloc[:, 0].values.reshape(-1, 1)
+
+# Train model on single feature
+model_plot = LogisticRegression(max_iter=1000)
+model_plot.fit(X1, y)
+
+# Scatter plot
+plt.scatter(X1, y, color='blue')
+
+# Sigmoid curve
+x_values = np.linspace(X1.min(), X1.max(), 100)
+y_values = model_plot.predict_proba(x_values.reshape(-1,1))[:,1]
+
+plt.plot(x_values, y_values)
+
+plt.xlabel("Feature")
+plt.ylabel("Probability")
+plt.title("Logistic Regression Curve")
 plt.show()
-
 ```
 
 ## Output:
-<img width="874" height="377" alt="image" src="https://github.com/user-attachments/assets/ac4175a5-1e0a-4a45-9229-ef1bb40d59a1" />
-<img width="842" height="636" alt="image" src="https://github.com/user-attachments/assets/a9aeb122-62ef-4d01-b2b8-bfaa80e4e052" />
-<img width="787" height="301" alt="image" src="https://github.com/user-attachments/assets/655345ae-f074-4536-aab6-e89ce4020057" />
-<img width="902" height="544" alt="image" src="https://github.com/user-attachments/assets/18feb115-9127-48a7-8bae-111a0737de49" />
+<img width="846" height="600" alt="image" src="https://github.com/user-attachments/assets/643ce0c6-9163-4334-92cd-d5b00b73e255" />
 
 
 
